@@ -1,0 +1,16 @@
+# Dépendances de l'application StartupDemo
+# ⚠️  Versions épinglées — plusieurs ont des CVE connues
+
+Flask==2.0.1              # CVE-2023-30861 — Cookie sans Secure flag
+requests==2.25.0          # CVE-2023-32681 — fuite de credentials sur redirections
+Pillow==8.2.0             # CVE-2023-44271 — déni de service sur images malformées
+cryptography==3.4.6       # CVE-2023-49083 — NULL pointer dereference
+PyYAML==5.3.1             # CVE-2020-14343 — exécution de code via YAML
+Jinja2==2.11.3            # CVE-2020-28493 — ReDoS (expressions régulières)
+urllib3==1.26.4           # CVE-2021-33503 — déni de service sur headers
+SQLAlchemy==1.3.23        # pas de CVE critique mais version abandonnée
+paramiko==2.7.1           # CVE-2022-24302 — race condition création de clés
+lxml==4.6.2               # CVE-2021-43818 — XSS via HTML cleaner
+
+# Dépendances de dev
+pytest==6.2.4
