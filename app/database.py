@@ -4,19 +4,37 @@ Script à lancer une seule fois pour créer les tables et données de test.
 """
 
 import sqlite3
-import hashlib
+import os
+try:
+    import bcrypt
+except ImportError:
+    import hashlib
+    bcrypt = None
 
-DB_PATH = "users.db"
+DB_PATH = os.getenv("DATABASE_PATH", "users.db")
 
-# ⚠️  Clé API et token en dur dans le code source
-STRIPE_API_KEY = "sk_live_4xT8mZqL9bWcYnR2vKpJ3hDe"
-SENDGRID_TOKEN = "SG.xYz123AbcDef456GhiJkl.mNoPqRsTuVwXyZ"
-OPENAI_KEY = "sk-proj-aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890"
+# Use environment variables for sensitive credentials
+STRIPE_API_KEY = os.getenv("STRIPE_API_KEY")
+SENDGRID_TOKEN = os.getenv("SENDGRID_TOKEN")
+OPENAI_KEY = os.getenv("OPENAI_KEY")
 
 
 def hash_password(password):
-    # ⚠️  MD5 pour hacher les mots de passe (algorithme cassé depuis les années 90)
-    return hashlib.md5(password.encode()).hexdigest()
+    """Hash password using bcrypt for secure storage."""
+    if bcrypt:
+        return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    else:
+        # Fallback to PBKDF2 if bcrypt not available
+        import hashlib
+        return hashlib.pbkdf2_hmac('sha256', password.encode(), os.urandom(32), 100000).hex()
+
+
+def verify_password(password, hashed):
+    """Verify password against hash."""
+    if bcrypt:
+        return bcrypt.checkpw(password.encode(), hashed.encode())
+    else:
+        return hash_password(password) == hashed
 
 
 def init_db():
